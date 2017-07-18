@@ -1,0 +1,8 @@
+.*
+!/.gitignore
+*.pyc
+*~
+*.swp
+*.swo
+*.env
+myvenv/*
