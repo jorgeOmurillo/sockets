@@ -89,19 +89,8 @@ def chat_leave(message):
 
 @channel_session_user
 @catch_client_error
-def chat_leave(message):
-    # Reverse of join - remove them from everything.
+def chat_send(message):
+    if int(message['room']) not in message.channel_session['rooms']:
+        raise ClientError("ROOM_ACCESS_DENIED")
     room = get_room_or_error(message["room"], message.user)
-
-    # Send a "leave message" to the room if available
-    if NOTIFY_USERS_ON_ENTER_OR_LEAVE_ROOMS:
-        room.send_message(None, message.user, MSG_TYPE_LEAVE)
-
-    room.websocket_group.discard(message.reply_channel)
-    message.channel_session['rooms'] = list(set(message.channel_session['rooms']).difference([room.id]))
-    # Send a message back that will prompt them to close the room
-    message.reply_channel.send({
-        "text": json.dumps({
-            "leave": str(room.id),
-        }),
-    })
+    room.send_message(message["message"], message.user)

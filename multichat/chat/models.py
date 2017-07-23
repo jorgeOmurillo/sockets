@@ -1,6 +1,5 @@
 import json
 from django.db import models
-from django.utils.six import python_2_unicode_compatible
 from channels import Group
 
 from .settings import MSG_TYPE_MESSAGE
@@ -36,5 +35,5 @@ class Room(models.Model):
                 {"text": json.dumps(final_msg)}
         )
 
-    def str(self):
+    def __str__(self):
         return self.title
