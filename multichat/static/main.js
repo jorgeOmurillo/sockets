@@ -1,9 +1,15 @@
-{# ... #}
-{% load staticfiles %}
-{# ... #}
+$(function () {
+    // Correctly decide between ws:// and wss://
+    var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+    var ws_path = ws_scheme + '://' + window.location.host + "/chat/stream/";
+    console.log("Connecting to " + ws_path);
+    var socket = new ReconnectingWebSocket(ws_path);
 
-{% block extra_body %}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
-    <script src="{% static "main.js" %}"></script>
-{% endblock %}
+    // Helpful debugging
+    socket.onopen = function () {
+        console.log("Connected to chat socket");
+    };
+    socket.onclose = function () {
+        console.log("Disconnected from chat socket");
+    }
+});
