@@ -3,35 +3,36 @@ $(function () {
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var ws_path = ws_scheme + '://' + window.location.host + "/chat/stream/";
     console.log("Connecting to " + ws_path);
+
     var socket = new ReconnectingWebSocket(ws_path);
 
     socket.onmessage = function (message) {
-        // Decode the JSON
-        console.log("Got websocket message " + message.data);
-        var data = JSON.parse(message.data);
-        // Handle errors
-        if (data.error) {
-            alert(data.error);
-            return;
-        }
-        // Handle joining
-        if (data.join) {
-            console.log("Joining room " + data.join);
-            var roomdiv = $(
-                    "<div class='room' id='room-" + data.join + "'>" +
-                    "<h2>" + data.title + "</h2>" +
-                    "<div class='messages'></div>" +
-                    "<form><input><button>Send</button></form>" +
-                    "</div>"
-                    );
-            $("#chats").append(roomdiv);
-            // Handle leaving
-        } else if (data.leave) {
-            console.log("Leaving room " + data.leave);
-            $("#room-" + data.leave).remove();
-        } else {
-            console.log("Cannot handle message!");
-        }
+    // Decode the JSON
+    console.log("Got websocket message " + message.data);
+    var data = JSON.parse(message.data);
+    // Handle errors
+    if (data.error) {
+        alert(data.error);
+        return;
+    }
+    // Handle joining
+    if (data.join) {
+        console.log("Joining room " + data.join);
+        var roomdiv = $(
+            "<div class='room' id='room-" + data.join + "'>" +
+            "<h2>" + data.title + "</h2>" +
+            "<div class='messages'></div>" +
+            "<form><input><button>Send</button></form>" +
+            "</div>"
+        );
+        $("#chats").append(roomdiv);
+        // Handle leaving
+    } else if (data.leave) {
+        console.log("Leaving room " + data.leave);
+        $("#room-" + data.leave).remove();
+    } else {
+        console.log("Cannot handle message!");
+    }
     }
 
     inRoom = function (roomId) {
