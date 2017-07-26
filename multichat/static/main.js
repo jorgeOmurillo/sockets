@@ -25,11 +25,59 @@ $(function () {
             "<form><input><button>Send</button></form>" +
             "</div>"
         );
+roomdiv.find("form").on("submit", function () {
+        socket.send(JSON.stringify({
+                    "command": "send",
+                            "room": data.join,
+                                    "message": roomdiv.find("input").val()
+                                            }));
+            roomdiv.find("input").val("");
+                return false;
+});
         $("#chats").append(roomdiv);
         // Handle leaving
     } else if (data.leave) {
         console.log("Leaving room " + data.leave);
         $("#room-" + data.leave).remove();
+	} else if (data.message || data.msg_type != 0) {
+		var msgdiv = $("#room-" + data.room + " .messages");
+		var ok_msg = "";
+		// msg types are defined in chat/settings.py
+		// Only for demo purposes is hardcoded, in production scenarios, consider call a service.
+		switch (data.msg_type) {
+			case 0:
+				// Message
+				ok_msg = "<div class='message'>" +
+					"<span class='username'>" + data.username + "</span>" +
+					"<span class='body'>" + data.message + "</span>" +
+					"</div>";
+				break;
+			case 1:
+				// Warning/Advice messages
+				ok_msg = "<div class='contextual-message text-warning'>" + data.message + "</div>";
+				break;
+			case 2:
+				// Alert/Danger messages
+				ok_msg = "<div class='contextual-message text-danger'>" + data.message + "</div>";
+				break;
+			case 3:
+				// "Muted" messages
+				ok_msg = "<div class='contextual-message text-muted'>" + data.message + "</div>";
+				break;
+			case 4:
+				// User joined room
+				ok_msg = "<div class='contextual-message text-muted'>" + data.username + " joined the room!" + "</div>";
+				break;
+			case 5:
+				// User left room
+				ok_msg = "<div class='contextual-message text-muted'>" + data.username + " left the room!" + "</div>";
+				break;
+			default:
+				console.log("Unsupported message type!");
+				return;
+		}
+		msgdiv.append(ok_msg);
+		msgdiv.scrollTop(msgdiv.prop("scrollHeight"));
     } else {
         console.log("Cannot handle message!");
     }

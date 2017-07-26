@@ -48,6 +48,7 @@ def chat_join(message):
     # Find the room they requested (by ID) and add ourselves to the send group
     # Note that, because of channel_session_user, we have a message.user
     # object that works just like request.user would. Security!
+    
     room = get_room_or_error(message["room"], message.user)
 
     # Send an "enter message" to the room if available
